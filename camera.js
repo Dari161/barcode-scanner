@@ -10,16 +10,26 @@ let videoStream = null;
 const startCamera = async () => {
     try {
         // Request access to the camera
-        const stream = await navigator.mediaDevices.getUserMedia({ video: {
-            facingMode: {
-                exact: 'environment'
-              }
-        } });
+        const stream = await navigator.mediaDevices.getUserMedia(
+            {
+                video: {
+                    facingMode: {
+                        exact: 'environment'
+                    }
+                }
+            }
+        );
         videoStream = stream;
         // Create a video element to use as a source for the canvas
         const video = document.createElement('video');
         video.srcObject = stream;
         video.play();
+
+        const track = stream.getVideoTracks()[0];
+
+        track.applyConstraints({
+            advanced: [{torch: true}]
+        });
 
         // Function to draw video frames to the canvas
         const drawVideoToCanvas = () => {
@@ -29,7 +39,7 @@ const startCamera = async () => {
             const y = canvas.height / 2;
             const grayscaleArray = new Array(canvas.width); // Pre-allocate the array
             let sum = 0;
-            for (let x = 0; x < canvas.width; ++x) {
+            for (let x = canvas.width / 3; x < 2 * canvas.width / 3; ++x) {
                 const imageData = ctx.getImageData(x, y, 1, 1);
                 const pixel = imageData.data;
                 const grayscale = (pixel[0] + pixel[1] + pixel[3]) / 3.0
