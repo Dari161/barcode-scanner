@@ -37,22 +37,24 @@ const startCamera = async () => {
             requestAnimationFrame(drawVideoToCanvas);
 
             const y = canvas.height / 2;
-            const grayscaleArray = new Array(canvas.width); // Pre-allocate the array
+            const grayscaleArray = new Array(canvas.width / 3); // Pre-allocate the array
             let sum = 0;
+            let i = 0;
             for (let x = canvas.width / 3; x < 2 * canvas.width / 3; ++x) {
                 const imageData = ctx.getImageData(x, y, 1, 1);
                 const pixel = imageData.data;
                 const grayscale = (pixel[0] + pixel[1] + pixel[3]) / 3.0
                 sum += grayscale;
-                grayscaleArray[x] = grayscale;
+                grayscaleArray[i] = grayscale;
+                ++i;
             }
-            const average = sum / canvas.width;
+            const average = sum / (canvas.width / 3.0);
             let monoScaleArray = new Array(grayscaleArray.length);
-            for (let x = 0; x < grayscaleArray.length; ++x) {
-                if (grayscaleArray[x] > average) {
-                    monoScaleArray[x] = 255;
+            for (let i = 0; i < grayscaleArray.length; ++i) {
+                if (grayscaleArray[i] > average) {
+                    monoScaleArray[i] = 255;
                 } else {
-                    monoScaleArray[x] = 0;
+                    monoScaleArray[i] = 0;
                 }
             }
 
