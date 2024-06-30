@@ -13,9 +13,7 @@ const startCamera = async () => {
         const stream = await navigator.mediaDevices.getUserMedia(
             {
                 video: {
-                    facingMode: {
-                        exact: 'environment'
-                    }
+                    facingMode: 'environment'
                 }
             }
         );
@@ -25,14 +23,30 @@ const startCamera = async () => {
         video.srcObject = stream;
         video.play();
 
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
+        video.onloadedmetadata = () => {
+            // Set canvas dimensions based on video metadata
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+        }
+
+        //console.log(canvas.width);
+        //console.log(canvas.height);
 
         const track = stream.getVideoTracks()[0];
 
-        track.applyConstraints({
-            advanced: [{torch: true}]
-        });
+        // Apply torch mode if supported
+        if (track && track.applyConstraints) {
+            try {
+                await track.applyConstraints({
+                    advanced: [{ torch: true }]
+                });
+                console.log('Torch mode enabled.');
+            } catch (err) {
+                console.error('Failed to apply torch mode constraints:', err);
+            }
+        } else {
+            console.warn('Torch mode not supported or could not be applied.');
+        }
 
         // Function to draw video frames to the canvas
         const drawVideoToCanvas = () => {
