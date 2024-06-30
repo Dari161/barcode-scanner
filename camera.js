@@ -25,6 +25,9 @@ const startCamera = async () => {
         video.srcObject = stream;
         video.play();
 
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
         const track = stream.getVideoTracks()[0];
 
         track.applyConstraints({
@@ -37,10 +40,10 @@ const startCamera = async () => {
             requestAnimationFrame(drawVideoToCanvas);
 
             const y = canvas.height / 2;
-            const grayscaleArray = new Array(canvas.width / 3); // Pre-allocate the array
+            const grayscaleArray = new Array(Math.floor(canvas.width / 3)); // Pre-allocate the array
             let sum = 0;
             let i = 0;
-            for (let x = canvas.width / 3; x < 2 * canvas.width / 3; ++x) {
+            for (let x = Math.floor(canvas.width / 3); x < 2 * canvas.width / 3; ++x) {
                 const imageData = ctx.getImageData(x, y, 1, 1);
                 const pixel = imageData.data;
                 const grayscale = (pixel[0] + pixel[1] + pixel[3]) / 3.0
