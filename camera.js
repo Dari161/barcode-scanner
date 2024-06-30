@@ -10,7 +10,9 @@ let videoStream = null;
 const startCamera = async () => {
     try {
         // Request access to the camera
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ video: {
+            facingMode: 'environment' // 'environment' specifies the rear camera
+        } });
         videoStream = stream;
         // Create a video element to use as a source for the canvas
         const video = document.createElement('video');
